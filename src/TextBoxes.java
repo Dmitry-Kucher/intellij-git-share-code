@@ -1,10 +1,14 @@
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
+import com.intellij.openapi.editor.Caret;
+import com.intellij.openapi.editor.CaretModel;
 import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.editor.VisualPosition;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
+import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.ex.StatusBarEx;
@@ -35,6 +39,12 @@ public class TextBoxes extends AnAction {
         VirtualFile virtualFile = event.getData(PlatformDataKeys.VIRTUAL_FILE);
         Editor editor = event.getData(PlatformDataKeys.EDITOR);
 
+        if (editor == null) {
+            return;
+        }
+
+        CaretModel caretModel = editor.getCaretModel();
+
         if (virtualFile == null || project == null || project.isDisposed()) {
             return;
         }
@@ -54,6 +64,7 @@ public class TextBoxes extends AnAction {
         GitLocalBranch localBranch = repoInfo.getCurrentBranch();
 
         String gitURL = "";
+        String gitBranch = repository.getCurrentBranchName();
         for (GitRemote gitRemote : repository.getRemotes()) {
             String remoteName = gitRemote.getName();
             if (remoteName.equals("origin")) {
@@ -63,7 +74,6 @@ public class TextBoxes extends AnAction {
                 }
                 if (gitURL.endsWith(".git")) {
                     gitURL = gitURL.substring(0, (gitURL.length() - 4));
-                    System.out.println(gitURL);
                 }
 
                 if (gitURL.startsWith("git@")) {
@@ -79,7 +89,20 @@ public class TextBoxes extends AnAction {
             }
         }
 
-        String toCopy = gitURL;
+        Caret currentCaret = editor.getCaretModel().getCurrentCaret();
+        Integer startPosition = currentCaret.getSelectionStartPosition().getLine();
+        startPosition++;
+        Integer endPosition = currentCaret.getSelectionEndPosition().getLine();
+        endPosition++;
+
+
+        String repositoryPath = repository.getRoot().getPath();
+        String filePath = virtualFile.getPath();
+        String relativePath = filePath.substring(repositoryPath.length());
+        String toCopy = gitURL + "/blob/" + gitBranch + relativePath + "#L" + startPosition;
+        if (!startPosition.equals(endPosition)) {
+           toCopy = toCopy + "-" + endPosition;
+        }
         CopyPasteManager.getInstance().setContents(new StringSelection(toCopy));
         setStatusBarText(project,  toCopy + " has been copied");
 
