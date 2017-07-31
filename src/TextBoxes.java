@@ -1,10 +1,8 @@
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
-import com.intellij.openapi.editor.Caret;
-import com.intellij.openapi.editor.CaretModel;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.editor.VisualPosition;
+import com.intellij.openapi.editor.*;
+import com.intellij.openapi.editor.impl.CaretImpl;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.Messages;
@@ -18,6 +16,7 @@ import git4idea.repo.GitRemote;
 import git4idea.repo.GitRepoInfo;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
+import sun.rmi.runtime.Log;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.Collection;
@@ -89,19 +88,27 @@ public class TextBoxes extends AnAction {
             }
         }
 
-        Caret currentCaret = editor.getCaretModel().getCurrentCaret();
-        Integer startPosition = currentCaret.getSelectionStartPosition().getLine();
-        startPosition++;
-        Integer endPosition = currentCaret.getSelectionEndPosition().getLine();
-        endPosition++;
+        List<CaretState> caretStates = editor.getCaretModel().getCaretsAndSelections();
 
+        CaretState currentCaretState = caretStates.get(0);
+
+        LogicalPosition startSelection = currentCaretState.getSelectionStart();
+        LogicalPosition endSelection = currentCaretState.getSelectionEnd();
+        if (startSelection == null || endSelection == null) {
+            return;
+        }
+
+        Integer startLinePosition = startSelection.line;
+        startLinePosition++;
+        Integer endLinePosition = endSelection.line;
+        endLinePosition++;
 
         String repositoryPath = repository.getRoot().getPath();
         String filePath = virtualFile.getPath();
         String relativePath = filePath.substring(repositoryPath.length());
-        String toCopy = gitURL + "/blob/" + gitBranch + relativePath + "#L" + startPosition;
-        if (!startPosition.equals(endPosition)) {
-           toCopy = toCopy + "-" + endPosition;
+        String toCopy = gitURL + "/blob/" + gitBranch + relativePath + "#L" + startLinePosition;
+        if (!startLinePosition.equals(endLinePosition)) {
+           toCopy = toCopy + "-" + endLinePosition;
         }
         CopyPasteManager.getInstance().setContents(new StringSelection(toCopy));
         setStatusBarText(project,  toCopy + " has been copied");
