@@ -2,24 +2,16 @@ import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
 import com.intellij.openapi.editor.*;
-import com.intellij.openapi.editor.impl.CaretImpl;
 import com.intellij.openapi.ide.CopyPasteManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.ui.Messages;
-import com.intellij.openapi.vcs.history.VcsRevisionNumber;
 import com.intellij.openapi.vfs.VirtualFile;
-import com.intellij.openapi.wm.WindowManager;
-import com.intellij.openapi.wm.ex.StatusBarEx;
-import git4idea.GitLocalBranch;
 import git4idea.GitUtil;
 import git4idea.repo.GitRemote;
-import git4idea.repo.GitRepoInfo;
 import git4idea.repo.GitRepository;
 import git4idea.repo.GitRepositoryManager;
-import sun.rmi.runtime.Log;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.datatransfer.StringSelection;
-import java.util.Collection;
 import java.util.List;
 
 public class GitCopyReference extends AnAction {
@@ -29,52 +21,38 @@ public class GitCopyReference extends AnAction {
     private GitRepository repository;
 
     public void actionPerformed(AnActionEvent event) {
+        try {
+            this.initProjectRelatedParams(event);
+        } catch (Exception e) {
+            UIComponentsHelper.setStatusBarText(this.project, "an error has occurred");
+        }
+
+        String gitURL = this.getGitURL();
+        String gitBranch = this.repository.getCurrentBranchName();
+        String linePosition = this.getLinePositionSuffix();
+        String relativePath = this.getRelativePath();
+
+        String toCopy = gitURL + "/blob/" + gitBranch + relativePath + linePosition;
+
+        CopyPasteManager.getInstance().setContents(new StringSelection(toCopy));
+        UIComponentsHelper.setStatusBarText(this.project,  toCopy + " has been copied");
+    }
+
+    private void initProjectRelatedParams(AnActionEvent event) throws Exception {
         this.project = event.getData(PlatformDataKeys.PROJECT);
         this.virtualFile = event.getData(PlatformDataKeys.VIRTUAL_FILE);
         this.editor = event.getData(PlatformDataKeys.EDITOR);
 
-        if (this.isNullableException()) {
-            return;
-        }
-
-        if (!GitUtil.isUnderGit(this.virtualFile)) {
-            return;
+        if (this.isNullableException() || !GitUtil.isUnderGit(this.virtualFile)) {
+            throw new Exception();
         }
 
         GitRepositoryManager manager = GitUtil.getRepositoryManager(this.project);
 
         this.repository = manager.getRepositoryForFile(this.virtualFile);
         if (this.repository == null) {
-            return;
+            throw new Exception();
         }
-
-        String gitURL = this.getGitURL();
-        String gitBranch = this.repository.getCurrentBranchName();
-
-        List<CaretState> caretStates = this.editor.getCaretModel().getCaretsAndSelections();
-
-        CaretState currentCaretState = caretStates.get(0);
-
-        LogicalPosition startSelection = currentCaretState.getSelectionStart();
-        LogicalPosition endSelection = currentCaretState.getSelectionEnd();
-        if (startSelection == null || endSelection == null) {
-            return;
-        }
-
-        Integer startLinePosition = startSelection.line;
-        startLinePosition++;
-        Integer endLinePosition = endSelection.line;
-        endLinePosition++;
-
-        String repositoryPath = this.repository.getRoot().getPath();
-        String filePath = this.virtualFile.getPath();
-        String relativePath = filePath.substring(repositoryPath.length());
-        String toCopy = gitURL + "/blob/" + gitBranch + relativePath + "#L" + startLinePosition;
-        if (!startLinePosition.equals(endLinePosition)) {
-           toCopy = toCopy + "-" + endLinePosition;
-        }
-        CopyPasteManager.getInstance().setContents(new StringSelection(toCopy));
-        UIComponentsHelper.setStatusBarText(this.project,  toCopy + " has been copied");
     }
 
     private String getGitURL () {
@@ -104,6 +82,36 @@ public class GitCopyReference extends AnAction {
             }
         }
         return gitURL;
+    }
+
+    @NotNull
+    private String getRelativePath() {
+        String repositoryPath = this.repository.getRoot().getPath();
+        String filePath = this.virtualFile.getPath();
+        return filePath.substring(repositoryPath.length());
+    }
+
+    private String getLinePositionSuffix() {
+        List<CaretState> caretStates = this.editor.getCaretModel().getCaretsAndSelections();
+
+        CaretState currentCaretState = caretStates.get(0);
+
+        LogicalPosition startSelection = currentCaretState.getSelectionStart();
+        LogicalPosition endSelection = currentCaretState.getSelectionEnd();
+        if (startSelection == null || endSelection == null) {
+            return "";
+        }
+
+        Integer startLinePosition = startSelection.line;
+        startLinePosition++;
+        Integer endLinePosition = endSelection.line;
+        endLinePosition++;
+
+        String linePosition = "#L" + startLinePosition;
+        if (!startLinePosition.equals(endLinePosition)) {
+            linePosition += "-" + endLinePosition;
+        }
+        return linePosition;
     }
 
     private boolean isNullableException() {
