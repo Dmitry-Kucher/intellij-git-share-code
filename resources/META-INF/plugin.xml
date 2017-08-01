@@ -1,5 +1,5 @@
 <idea-plugin>
-  <id>com.your.company.unique.plugin.id</id>
+  <id>ru.lenpro.git.copy.reference</id>
   <name>Plugin display name here</name>
   <version>1.0</version>
   <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
@@ -33,7 +33,7 @@
 
   <actions>
     <!-- Add your actions here -->
-    <action id="TextBoxes" class="TextBoxes" text="Copy GIT URL reference" description="GIT Website reference ">
+    <action id="GitCopyReference" class="GitCopyReference" text="Copy GIT URL reference" description="GIT Website reference ">
       <add-to-group group-id="EditorPopupMenu" relative-to-action="CopyReference" anchor="after"/>
       <keyboard-shortcut first-keystroke="control alt G" keymap="$default"/>
     </action>
@@ -41,7 +41,7 @@
 
   <application-components>
     <component>
-      <implementation-class>GitlabIntegration</implementation-class>
+      <implementation-class>GitCopyReferenceApplication</implementation-class>
     </component>
   </application-components>
 </idea-plugin>

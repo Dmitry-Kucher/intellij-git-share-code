@@ -3,8 +3,8 @@ import com.intellij.openapi.actionSystem.DefaultActionGroup;
 import com.intellij.openapi.components.ApplicationComponent;
 import org.jetbrains.annotations.NotNull;
 
-public class GitlabIntegration implements ApplicationComponent {
-    public GitlabIntegration() {
+public class GitCopyReferenceApplication implements ApplicationComponent {
+    public GitCopyReferenceApplication() {
     }
 
     @Override
@@ -20,6 +20,6 @@ public class GitlabIntegration implements ApplicationComponent {
     @Override
     @NotNull
     public String getComponentName() {
-        return "GitlabIntegration";
+        return "GitCopyReferenceApplication";
     }
 }
