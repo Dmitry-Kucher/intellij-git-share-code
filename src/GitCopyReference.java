@@ -12,7 +12,7 @@ import git4idea.repo.GitRepositoryManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.awt.datatransfer.StringSelection;
-import java.util.List;
+import java.util.*;
 
 public class GitCopyReference extends AnAction {
     private Project project;
@@ -27,12 +27,7 @@ public class GitCopyReference extends AnAction {
             UIComponentsHelper.setStatusBarText(this.project, "an error has occurred");
         }
 
-        String gitURL = this.getGitURL();
-        String gitBranch = this.repository.getCurrentBranchName();
-        String linePosition = this.getLinePositionSuffix();
-        String relativePath = this.getRelativePath();
-
-        String toCopy = gitURL + "/blob/" + gitBranch + relativePath + linePosition;
+        String toCopy = this.getLinkToCopy();
 
         CopyPasteManager.getInstance().setContents(new StringSelection(toCopy));
         UIComponentsHelper.setStatusBarText(this.project,  toCopy + " has been copied");
@@ -55,7 +50,16 @@ public class GitCopyReference extends AnAction {
         }
     }
 
-    private String getGitURL () {
+    @NotNull
+    private String getLinkToCopy() {
+        String gitURL = this.getGitURL();
+        String gitBranch = this.repository.getCurrentBranchName();
+        String linePosition = this.getLinePositionSuffix();
+        String relativePath = this.getRelativePath();
+        return gitURL + "/blob/" + gitBranch + relativePath + linePosition;
+    }
+
+    private String getGitURL() {
         String gitURL = "";
         for (GitRemote gitRemote : this.repository.getRemotes()) {
             String remoteName = gitRemote.getName();
