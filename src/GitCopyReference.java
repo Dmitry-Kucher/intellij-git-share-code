@@ -30,7 +30,7 @@ public class GitCopyReference extends AnAction {
         String toCopy = this.getLinkToCopy();
 
         CopyPasteManager.getInstance().setContents(new StringSelection(toCopy));
-        UIComponentsHelper.setStatusBarText(this.project,  toCopy + " has been copied");
+//        UIComponentsHelper.setStatusBarText(this.project,  toCopy + " has been copied");
     }
 
     private void initProjectRelatedParams(AnActionEvent event) throws Exception {
@@ -53,10 +53,14 @@ public class GitCopyReference extends AnAction {
     @NotNull
     private String getLinkToCopy() {
         String gitURL = this.getGitURL();
+        UIComponentsHelper.setStatusBarText(this.project,  gitURL);
+        Boolean isBitBucket = this.isBitBucket(gitURL);
+        String blobPart = isBitBucket ? "" : "/blob";
+
         String gitBranch = this.repository.getCurrentBranchName();
-        String linePosition = this.getLinePositionSuffix();
+        String linePosition = this.getLinePositionSuffix(isBitBucket);
         String relativePath = this.getRelativePath();
-        return gitURL + "/blob/" + gitBranch + relativePath + linePosition;
+        return gitURL + blobPart + gitBranch + relativePath + linePosition;
     }
 
     private String getGitURL() {
@@ -88,6 +92,10 @@ public class GitCopyReference extends AnAction {
         return gitURL;
     }
 
+    private Boolean isBitBucket(String gitURL) {
+        return gitURL.toLowerCase().contains("bitbucket");
+    }
+
     @NotNull
     private String getRelativePath() {
         String repositoryPath = this.repository.getRoot().getPath();
@@ -95,8 +103,10 @@ public class GitCopyReference extends AnAction {
         return filePath.substring(repositoryPath.length());
     }
 
-    private String getLinePositionSuffix() {
+    private String getLinePositionSuffix(Boolean isBitBucket) {
         List<CaretState> caretStates = this.editor.getCaretModel().getCaretsAndSelections();
+        String linePrefix;
+        linePrefix = isBitBucket ? "#lines-" : "#L";
 
         CaretState currentCaretState = caretStates.get(0);
 
@@ -111,7 +121,7 @@ public class GitCopyReference extends AnAction {
         Integer endLinePosition = endSelection.line;
         endLinePosition++;
 
-        String linePosition = "#L" + startLinePosition;
+        String linePosition = linePrefix + startLinePosition;
         if (!startLinePosition.equals(endLinePosition)) {
             linePosition += "-" + endLinePosition;
         }

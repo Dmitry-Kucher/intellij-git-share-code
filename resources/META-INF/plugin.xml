@@ -1,12 +1,11 @@
 <idea-plugin>
-  <id>ru.lenpro.git.copy.reference</id>
-  <name>Plugin display name here</name>
+  <id>ru.dev-stand.git.copy.reference</id>
+  <name>Git Share URL</name>
   <version>1.0</version>
-  <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+  <vendor email="support@yourcompany.com" url="https://dev-stand.ru">Dev-Stand</vendor>
 
   <description><![CDATA[
-      Enter short description for your plugin here.<br>
-      <em>most HTML tags may be used</em>
+      Plugin allows to copy git url reference
     ]]></description>
   <depends>com.intellij.modules.lang</depends>
   <depends>Git4Idea</depends>
