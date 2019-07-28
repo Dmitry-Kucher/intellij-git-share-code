@@ -30,7 +30,7 @@ public class GitCopyReference extends AnAction {
         String toCopy = this.getLinkToCopy();
 
         CopyPasteManager.getInstance().setContents(new StringSelection(toCopy));
-//        UIComponentsHelper.setStatusBarText(this.project,  toCopy + " has been copied");
+        UIComponentsHelper.setStatusBarText(this.project,  toCopy + " has been copied");
     }
 
     private void initProjectRelatedParams(AnActionEvent event) throws Exception {
@@ -53,9 +53,9 @@ public class GitCopyReference extends AnAction {
     @NotNull
     private String getLinkToCopy() {
         String gitURL = this.getGitURL();
-        UIComponentsHelper.setStatusBarText(this.project,  gitURL);
+//        UIComponentsHelper.setStatusBarText(this.project,  gitURL);
         Boolean isBitBucket = this.isBitBucket(gitURL);
-        String blobPart = isBitBucket ? "" : "/blob";
+        String blobPart = isBitBucket ? "/src/" : "/blob";
 
         String gitBranch = this.repository.getCurrentBranchName();
         String linePosition = this.getLinePositionSuffix(isBitBucket);
@@ -105,8 +105,8 @@ public class GitCopyReference extends AnAction {
 
     private String getLinePositionSuffix(Boolean isBitBucket) {
         List<CaretState> caretStates = this.editor.getCaretModel().getCaretsAndSelections();
-        String linePrefix;
-        linePrefix = isBitBucket ? "#lines-" : "#L";
+        String linePrefix = isBitBucket ? "#lines-" : "#L";
+        String lineSeparator = isBitBucket ? ":" : "-";
 
         CaretState currentCaretState = caretStates.get(0);
 
@@ -123,7 +123,7 @@ public class GitCopyReference extends AnAction {
 
         String linePosition = linePrefix + startLinePosition;
         if (!startLinePosition.equals(endLinePosition)) {
-            linePosition += "-" + endLinePosition;
+            linePosition += lineSeparator + endLinePosition;
         }
         return linePosition;
     }
@@ -132,4 +132,3 @@ public class GitCopyReference extends AnAction {
         return (this.project == null || this.virtualFile == null || this.editor == null || this.project.isDisposed());
     }
 }
-
