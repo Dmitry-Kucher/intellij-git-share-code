@@ -53,14 +53,13 @@ public class GitCopyReference extends AnAction {
     @NotNull
     private String getLinkToCopy() {
         String gitURL = this.getGitURL();
-//        UIComponentsHelper.setStatusBarText(this.project,  gitURL);
         Boolean isBitBucket = this.isBitBucket(gitURL);
         String blobPart = isBitBucket ? "/src/" : "/blob";
 
-        String gitBranch = this.repository.getCurrentBranchName();
+        String commitHash = this.repository.getCurrentRevision();
         String linePosition = this.getLinePositionSuffix(isBitBucket);
         String relativePath = this.getRelativePath();
-        return gitURL + blobPart + gitBranch + relativePath + linePosition;
+        return gitURL + blobPart + commitHash + relativePath + linePosition;
     }
 
     private String getGitURL() {
