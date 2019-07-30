@@ -66,20 +66,20 @@ public class GitCopyReference extends AnAction {
         String gitURL = "";
         for (GitRemote gitRemote : this.repository.getRemotes()) {
             String remoteName = gitRemote.getName();
-            if (remoteName.equals("origin")) {
+            if (remoteName.equals(GitRemote.ORIGIN)) {
                 gitURL = gitRemote.getFirstUrl();
                 if(gitURL == null) {
                     return "";
                 }
-                if (gitURL.endsWith(".git")) {
+                if (gitURL.endsWith(GitUtil.DOT_GIT)) {
                     gitURL = gitURL.substring(0, (gitURL.length() - 4));
                 }
 
                 if (gitURL.startsWith("git@")) {
                     String scheme = "http://";
                     gitURL = scheme + gitURL.substring(4);
-                    Integer replaceStart = gitURL.lastIndexOf(":");
-                    Integer replaceEnd = replaceStart + 1;
+                    int replaceStart = gitURL.lastIndexOf(":");
+                    int replaceEnd = replaceStart + 1;
                     String replaceWith = "/";
                     StringBuilder gitURLBuilder = new StringBuilder(gitURL);
                     gitURLBuilder.replace(replaceStart, replaceEnd, replaceWith);
@@ -92,7 +92,8 @@ public class GitCopyReference extends AnAction {
     }
 
     private Boolean isBitBucket(String gitURL) {
-        return gitURL.toLowerCase().contains("bitbucket");
+        String bitbucketIdentifier = "bitbucket";
+        return gitURL.toLowerCase().contains(bitbucketIdentifier);
     }
 
     @NotNull
