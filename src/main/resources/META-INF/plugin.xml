@@ -15,6 +15,9 @@
     </extensions>
 
     <actions>
-        <!-- Add your actions here -->
+        <action id="GitCopyReference" class="GitCopyReference" text="Copy GIT URL reference" description="GIT Website reference ">
+            <add-to-group group-id="EditorPopupMenu" relative-to-action="CopyReference" anchor="after"/>
+            <keyboard-shortcut first-keystroke="control alt G" keymap="$default"/>
+        </action>
     </actions>
 </idea-plugin>
