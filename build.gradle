@@ -18,10 +18,11 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2019.2.4'
+    pluginName 'Git Share URL'
+    version '2017.1'
+    type 'IC'
+    plugins 'git4idea'
 }
 patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+
 }
