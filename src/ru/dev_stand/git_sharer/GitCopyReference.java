@@ -1,3 +1,5 @@
+package ru.dev_stand.git_sharer;
+
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
 import com.intellij.openapi.actionSystem.PlatformDataKeys;
@@ -13,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.awt.datatransfer.StringSelection;
 import java.util.*;
+import ru.dev_stand.git_sharer.UIComponentsHelper;
 
 public class GitCopyReference extends AnAction {
     private Project project;

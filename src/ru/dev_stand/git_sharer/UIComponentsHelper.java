@@ -1,3 +1,5 @@
+package ru.dev_stand.git_sharer;
+
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.WindowManager;
 import com.intellij.openapi.wm.ex.StatusBarEx;
