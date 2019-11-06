@@ -1,42 +1,23 @@
 <idea-plugin>
-  <id>ru.dev-stand.git.share.url</id>
-  <name>Git Share URL</name>
-  <version>1.0</version>
-  <vendor email="git-share-url@dev-stand.ru" url="https://dev-stand.ru">Dev-Stand</vendor>
+    <id>ru.dev-stand.git.share.url</id>
+    <name>Git Share URL</name>
+    <vendor email="git-share-url@dev-stand.ru" url="https://dev-stand.ru">Dev-Stand</vendor>
 
-  <description><![CDATA[
+    <description><![CDATA[
       Useful plugin to share git URL. Supported gitlab/bitbucket as git management system
     ]]></description>
 
-  <change-notes><![CDATA[
+    <idea-version since-build="173.0"/>
+    <depends>Git4Idea</depends>
 
-    ]]>
-  </change-notes>
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
 
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="173.0"/>
-
-  <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-       on how to target different products -->
-  <!-- uncomment to enable plugin in all products
-  <depends>com.intellij.modules.lang</depends>
-  -->
-  <depends>Git4Idea</depends>
-
-  <extensions defaultExtensionNs="com.intellij">
-    <!-- Add your extensions here -->
-  </extensions>
-
-  <actions>
-    <action id="GitCopyReference" class="GitCopyReference" text="Copy GIT URL reference" description="GIT Website reference ">
-      <add-to-group group-id="EditorPopupMenu" relative-to-action="CopyReference" anchor="after"/>
-      <keyboard-shortcut first-keystroke="control alt G" keymap="$default"/>
-    </action>
-  </actions>
-
-  <application-components>
-    <component>
-      <implementation-class>GitCopyReferenceApplication</implementation-class>
-    </component>
-  </application-components>
+    <actions>
+        <action id="GitCopyReference" class="ru.dev_stand.git_sharer.GitCopyReference" text="Copy GIT URL reference" description="GIT Website reference ">
+            <add-to-group group-id="EditorPopupMenu" relative-to-action="CopyReference" anchor="after"/>
+            <keyboard-shortcut first-keystroke="control alt G" keymap="$default"/>
+        </action>
+    </actions>
 </idea-plugin>
