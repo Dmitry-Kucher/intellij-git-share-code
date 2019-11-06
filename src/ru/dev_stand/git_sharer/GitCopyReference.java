@@ -57,7 +57,7 @@ public class GitCopyReference extends AnAction {
     private String getLinkToCopy() {
         String gitURL = this.getGitURL();
         Boolean isBitBucket = this.isBitBucket(gitURL);
-        String blobPart = isBitBucket ? "/src/" : "/blob";
+        String blobPart = isBitBucket ? "/src/" : "/blob/";
 
         String commitHash = this.repository.getCurrentRevision();
         String linePosition = this.getLinePositionSuffix(isBitBucket);

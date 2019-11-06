@@ -7,7 +7,11 @@
       Useful plugin to share git URL. Supported gitlab/bitbucket as git management system
     ]]></description>
 
-    <idea-version since-build="173.0"/>
+    <idea-version since-build="139.0"/>
+
+    <depends>com.intellij.modules.vcs</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.platform</depends>
     <depends>Git4Idea</depends>
 
     <extensions defaultExtensionNs="com.intellij">
